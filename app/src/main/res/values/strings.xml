@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">HealthTracker</string>
+    <string name="measure_hr">Measure HR</string>
+    <string name="android_client_id">652559059040-u4kt1r2nd2om4uhkjfmrnjjfpma3p9ch.apps.googleusercontent.com</string>
+    <string name="web_client_id">652559059040-08bu5rl7r06ml232dvulm49rutd5d9ce.apps.googleusercontent.com</string>
+
+</resources>

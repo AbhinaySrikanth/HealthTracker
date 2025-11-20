@@ -1,0 +1,12 @@
+package com.example.healthtracker.data
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "heart_rate_table")
+data class HeartRateEntry(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val bpm: Int,
+    val timestamp: Long = System.currentTimeMillis()
+)
