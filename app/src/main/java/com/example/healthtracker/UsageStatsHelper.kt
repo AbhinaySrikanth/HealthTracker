@@ -27,14 +27,6 @@ object UsageStatsHelper {
 
         return total
     }
-
-    // ----------------------------------------------------------------------
-    // UNLOCK COUNT (from UnlockReceiver)
-    // ----------------------------------------------------------------------
-    fun getUnlockCount(receiver: UnlockReceiver): Int {
-        return receiver.dailyUnlockCount
-    }
-
     // ----------------------------------------------------------------------
     // FORMAT TIME
     // ----------------------------------------------------------------------

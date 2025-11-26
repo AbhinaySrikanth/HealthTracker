@@ -34,8 +34,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var camHrTv: TextView
     private lateinit var dailyStepsTv: TextView
     private lateinit var historyHrTv: TextView
-    private lateinit var unlockTv: TextView
-    private lateinit var screenTv: TextView
+    private lateinit var unlocksTv: TextView
+    private lateinit var screenTimeTv: TextView
     private lateinit var loginSection: LinearLayout
 
     private lateinit var repository: Repository
@@ -65,8 +65,8 @@ class MainActivity : AppCompatActivity() {
         camHrTv = findViewById(R.id.camHrTv)
         dailyStepsTv = findViewById(R.id.dailyStepsTv)
         historyHrTv = findViewById(R.id.historyHrTv)
-        unlockTv = findViewById(R.id.unlockTv)
-        screenTv = findViewById(R.id.screenTv)
+        unlocksTv = findViewById(R.id.unlocksTv)
+        screenTimeTv = findViewById(R.id.screenTimeTv)
         loginSection = findViewById(R.id.loginSection)
 
         repository = Repository(AppDatabase.getDatabase(this))
@@ -101,8 +101,8 @@ class MainActivity : AppCompatActivity() {
         scope.launch {
             val unlocks = repository.getTodayUnlockCount()
             val screen = repository.getTodayScreenTime()
-            unlockTv.text = "Unlocks: $unlocks"
-            screenTv.text = "Screen time: ${screen}s"
+            unlocksTv.text = "Unlocks: $unlocks"
+            screenTimeTv.text = "Screen time: ${screen}s"
         }
     }
 

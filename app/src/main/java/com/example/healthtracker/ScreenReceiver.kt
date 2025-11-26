@@ -29,7 +29,7 @@ class ScreenReceiver : BroadcastReceiver() {
                 if (last > 0L) {
                     val session = System.currentTimeMillis() - last
                     CoroutineScope(Dispatchers.IO).launch {
-                        repo.addScreenTimeMillisForToday(session)
+                        repo.addScreenTime(session/1000)
                     }
                     prefs.edit().remove(KEY_LAST_ON).apply()
                 }
