@@ -2,30 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Camera optional -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <!-- Core permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
-
-    <!-- Required for phone usage tracking -->
-    <uses-permission
-        android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions" />
-
-    <!-- Background body sensors (Fit HR) -->
-    <uses-permission
-        android:name="android.permission.BODY_SENSORS_BACKGROUND"
-        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".HealthApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -33,9 +23,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        tools:targetApi="31"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.HealthTracker">
 
-        <!-- MAIN ACTIVITY -->
+
+
+        <!-- MAIN ACTIVITY (Compose) -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -45,24 +39,7 @@
             </intent-filter>
         </activity>
 
-        <!-- PHONE USAGE: unlock count tracker -->
-        <receiver
-            android:name=".UnlockReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
 
-        <!-- PHONE USAGE: screen ON/OFF tracker -->
-        <receiver
-            android:name=".ScreenReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.SCREEN_ON" />
-                <action android:name="android.intent.action.SCREEN_OFF" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

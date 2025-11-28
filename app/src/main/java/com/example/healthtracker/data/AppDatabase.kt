@@ -10,18 +10,18 @@ import androidx.room.RoomDatabase
         HeartRateEntry::class,
         StepEntry::class,
         PhoneStepEntry::class,
-        UnlockEntry::class,
-        ScreenTimeEntry::class
+        MedicineEntry::class,
+        ProgressSnapshot::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun heartRateDao(): HeartRateDao
     abstract fun stepDao(): StepDao
-    abstract fun unlockDao(): UnlockDao
-    abstract fun screenTimeDao(): ScreenTimeDao
+    abstract fun medicineDao(): MedicineDao
+    abstract fun progressDao(): ProgressDao
 
     companion object {
         @Volatile

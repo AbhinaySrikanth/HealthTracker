@@ -5,6 +5,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "screen_time_table")
 data class ScreenTimeEntry(
-    @PrimaryKey val date: String,
+    @PrimaryKey val date: Long,
     val seconds: Long
 )

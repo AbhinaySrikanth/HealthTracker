@@ -5,6 +5,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "unlock_table")
 data class UnlockEntry(
-    @PrimaryKey val date: String,   // yyyy-MM-dd
+    @PrimaryKey val date: Long,   // yyyy-MM-dd
     val unlocks: Int
 )

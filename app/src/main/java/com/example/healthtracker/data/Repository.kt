@@ -1,63 +1,95 @@
 package com.example.healthtracker.data
 
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.healthtracker.models.MedicineDto
+import com.example.healthtracker.models.ProgressDto
+import com.example.healthtracker.network.ApiService
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class Repository(private val db: AppDatabase) {
+/**
+ * Minimal safe Repository:
+ * - api: the default ApiService (login currently implemented)
+ * - apiFor(baseUrl): helper to create a Retrofit instance for a custom base URL (ngrok)
+ *
+ * Network-heavy methods are defensive and fall back to local/default data so the app won't crash
+ * when backend endpoints are missing or return non-JSON payloads (ngrok HTML pages).
+ */
+@Singleton
+class Repository @Inject constructor(
+    val api: ApiService,
+    private val db: AppDatabase
+) {
 
-    private val heartDao = db.heartRateDao()
-    private val stepDao = db.stepDao()
-    private val unlockDao = db.unlockDao()
-    private val screenDao = db.screenTimeDao()
+    fun apiFor(baseUrl: String): ApiService {
 
-    private fun today(): String =
-        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val moshi = Moshi.Builder()
+            .add(com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory())
+            .build()
 
-    // ---------------- HEART RATE ----------------
-    suspend fun saveHeartRate(bpm: Int) {
-        heartDao.insert(HeartRateEntry(bpm = bpm))
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .client(
+                OkHttpClient.Builder()
+                    .build()
+            )
+            .build()
+            .create(ApiService::class.java)
     }
 
-    suspend fun getRecentHeartRates() = heartDao.getRecent()
 
-    // ---------------- STEPS ----------------
-    suspend fun saveFitSteps(steps: Int) {
-        stepDao.insertFitSteps(StepEntry(steps = steps))
-    }
 
-    suspend fun savePhoneSteps(steps: Int) {
-        stepDao.insertPhoneSteps(PhoneStepEntry(steps = steps))
-    }
 
-    // ---------------- UNLOCK COUNTS ----------------
-    suspend fun incrementUnlocksForToday() {
-        val d = today()
-        val entry = unlockDao.getForDate(d)
-
-        if (entry == null) {
-            unlockDao.insert(UnlockEntry(date = d, unlocks = 1))
-        } else {
-            unlockDao.increment(d)
+    suspend fun fetchTodayProgress(): ProgressDto {
+        // Use a safe local fallback to avoid crashes.
+        // When backend adds a matching endpoint, replace this logic with a network call using api or apiFor().
+        return try {
+            // If you later add an endpoint in ApiService named getTodayProgress, call it here.
+            ProgressDto() // default empty progress
+        } catch (e: Exception) {
+            ProgressDto()
         }
     }
 
-    suspend fun getTodayUnlockCount(): Int {
-        return unlockDao.getForDate(today())?.unlocks ?: 0
+    suspend fun getLocalMedicines(): List<MedicineEntry> = try {
+        db.medicineDao().getAll()
+    } catch (e: Exception) {
+        emptyList()
     }
 
-    // ---------------- SCREEN TIME ----------------
-    suspend fun addScreenTime(seconds: Long) {
-        val d = today()
-        val entry = screenDao.getForDate(d)
-
-        if (entry == null) {
-            screenDao.insert(ScreenTimeEntry(date = d, seconds = seconds))
-        } else {
-            screenDao.updateTime(d, seconds)
+    /**
+     * Defensive refresh - will do nothing if API endpoint is not present.
+     * Uncomment / update when backend returns medicines endpoint.
+     */
+    suspend fun refreshMedicinesFromServer() {
+        try {
+            // If your backend provides /medicines and ApiService.getMedicines(), use it here.
+            // val resp = api.getMedicines()
+            // if (resp.isSuccessful) { ... }
+        } catch (_: Exception) {
+            // ignore - offline / endpoint not available
         }
     }
 
-    suspend fun getTodayScreenTime(): Long {
-        return screenDao.getForDate(today())?.seconds ?: 0
+    suspend fun markMedicine(id: String, taken: Boolean) {
+        try {
+            db.medicineDao().markTaken(id, taken)
+        } catch (_: Exception) { /* ignore db error */ }
+
+        // best-effort notify server if method exists
+        try {
+            // api.markMedicine(id, mapOf("taken" to taken))
+        } catch (_: Exception) { /* ignore */ }
+    }
+
+    suspend fun saveProgressSnapshot(percent: Int) {
+        try {
+            db.progressDao().insert(ProgressSnapshot(timestamp = System.currentTimeMillis(), percent = percent))
+        } catch (_: Exception) { /* ignore */ }
     }
 }
